@@ -33,6 +33,7 @@ import {
   X,
 } from "lucide-react";
 import "./styles.css";
+import oliviaImg from "./assets/olivia.svg";
 
 function playTone(type = "tap", enabled = true) {
   if (!enabled || typeof window === "undefined") return;
@@ -58,7 +59,7 @@ function playTone(type = "tap", enabled = true) {
 
 /* Every image below is used in exactly one place — no reuse — except Olivia's photo. */
 const stockImages = {
-  olivia: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=1200&q=80",
+  olivia: oliviaImg,
   judgement: "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1200&q=80",
   vocabulary: "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=1200&q=80",
   change: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=80",
@@ -432,6 +433,16 @@ const sections = [
 
 const lessonList = sections.map((section) => section.title);
 
+const sectionGroups = [
+  { label: "Overview", start: 0 },
+  { label: "Domains", start: 2 },
+  { label: "Concurrency", start: 4 },
+  { label: "Processes", start: 5 },
+  { label: "Focus Areas", start: 6 },
+  { label: "Full Map", start: 7 },
+  { label: "Reference", start: 9 },
+];
+
 /* ---------------------------------------------------------------- */
 /* Shared shell (topbar, progress, outline) — identical to 1.6       */
 /* ---------------------------------------------------------------- */
@@ -473,6 +484,39 @@ function TopBar({ soundOn, onToggleSound }) {
         </button>
       </div>
     </header>
+  );
+}
+
+function SectionTabs({ groups, totalSections, activeIndex, completed, isReachable, onSelect }) {
+  const boundaries = groups.map((group, index) => ({
+    ...group,
+    end: index + 1 < groups.length ? groups[index + 1].start - 1 : totalSections - 1,
+  }));
+  const activeGroupIndex = boundaries.findIndex((group) => activeIndex >= group.start && activeIndex <= group.end);
+
+  return (
+    <nav className="section-tabs" aria-label="Lesson sections">
+      <p className="section-tabs-count">Section {activeGroupIndex + 1} of {boundaries.length}</p>
+      <div className="section-tabs-row">
+        {boundaries.map((group, index) => {
+          const done = completed.slice(group.start, group.end + 1).every(Boolean);
+          const isActive = index === activeGroupIndex;
+          const reachable = isReachable(group.start);
+          return (
+            <button
+              key={group.label}
+              type="button"
+              className={`section-tab ${isActive ? "active" : done ? "done" : "locked"}`}
+              onClick={() => reachable && onSelect(group.start)}
+              disabled={!reachable}
+            >
+              {done && !isActive ? <Check size={14} /> : null}
+              <span>{group.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </nav>
   );
 }
 
@@ -917,6 +961,14 @@ function App() {
             )}
           </div>
           <article className="lesson-card">
+            <SectionTabs
+              groups={sectionGroups}
+              totalSections={sections.length}
+              activeIndex={activeIndex}
+              completed={completed}
+              isReachable={(index) => completed[index] || index <= activeIndex}
+              onSelect={setActiveIndex}
+            />
             <AnimatePresence mode="wait">
               <LessonSection section={current} isComplete={completed[activeIndex]} onComplete={() => markComplete(activeIndex)} soundOn={soundOn} />
             </AnimatePresence>

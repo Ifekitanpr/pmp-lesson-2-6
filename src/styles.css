@@ -250,6 +250,76 @@ button:disabled {
   min-width: 0;
 }
 
+.section-tabs {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.section-tabs-count {
+  margin: 0;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.section-tabs-row {
+  display: flex;
+  width: calc(100% + 60px);
+  margin: 0 -30px;
+  border-top: 1px solid var(--gray-20);
+  border-bottom: 1px solid var(--gray-20);
+}
+
+.section-tab {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  border-right: 1px solid var(--gray-20);
+  border-radius: 0;
+  background: var(--gray-10);
+  color: var(--gray-50);
+  padding: 14px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.section-tab:last-child {
+  border-right: 0;
+}
+
+.section-tab.done {
+  background: var(--success);
+  color: var(--white);
+}
+
+.section-tab.active {
+  background: var(--white);
+  color: var(--gray-90);
+  box-shadow: inset 0 -3px 0 0 var(--blue);
+}
+
+.section-tab:disabled {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.section-tab:not(:disabled):hover {
+  background: rgba(0, 123, 255, 0.1);
+  color: var(--blue);
+}
+
 .slide-object-stage {
   transform-origin: center top;
 }
@@ -873,7 +943,7 @@ button:disabled {
   aspect-ratio: 4 / 5;
   max-height: 260px;
   border-radius: 8px;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .priya-panel h3 {
